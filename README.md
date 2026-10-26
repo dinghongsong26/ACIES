@@ -14,10 +14,7 @@ controllers for cyber-physical systems. In each synthesis episode, a
 component-level contracts, and formal verification (CHASE + nuXmv) and
 GR(1) synthesis (SLUGS) return a diagnostic for every failed check that
 drives contract repair. Across episodes, a **Summarizer** agent distills
-the verification outcomes into lessons stored in memory. On five control
-synthesis tasks and eight LLM backbones, this self-evolution reduces the
-Decomposer token consumption by up to 65% and the end-to-end synthesis
-latency by up to 62%.
+the verification outcomes into lessons stored in memory.
 
 ## Installation
 
@@ -44,11 +41,22 @@ source .env
 
 ## Quick start
 
+A full run of `python main.py --task warehouse --n 2 --resynth --retranslate`
+(2× speed; [MP4](figure/acies_demo.mp4)): the Translator writes and
+checks the LTL, the Decomposer's first attempt fails the goal-witness
+check and is repaired from the lesson in the second, and all three FSMs
+are synthesized in under three minutes.
+
 <p align="center">
-  <img src="figure/warehouse_n2.gif" width="640"
+  <a href="figure/acies_demo.mp4"><img src="figure/acies_demo.gif" width="820"
+     alt="Terminal recording of an ACIES run on the two-robot warehouse task: Translator output with requirement tags, then Decomposer attempts with Steps 1 to 12 and the synthesized FSMs"></a>
+</p>
+
+<p align="center">
+  <img src="figure/warehouse_n2.gif" width="420"
        alt="Two AGVs fetching items from the shelves and delivering them to a shared dock; the synthesized Arbiter FSM grants the dock to one robot at a time, with zero mutual-exclusion violations">
   <br>
-  <em><code>python main.py --task warehouse --n 2</code>: two robots share one dock; both robot controllers and the Arbiter are synthesized from natural-language requirements.</em>
+  <em>The FSMs synthesized in that run, executed in the simulator: two robots share one dock under the Arbiter, 22 deliveries, no mutual-exclusion violation.</em>
 </p>
 
 `main.py` is the single entry point. It runs the task layer (synthesize,
