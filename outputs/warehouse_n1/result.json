@@ -1,0 +1,28 @@
+{
+  "task": "warehouse",
+  "outdir": "outputs/warehouse_n1",
+  "success": true,
+  "ltl_file": "outputs/warehouse_n1/workdir/specs.ltl",
+  "fsm_files": {
+    "Robot1": "outputs/warehouse_n1/workdir/robot1.json",
+    "Arbiter": "outputs/warehouse_n1/workdir/arbiter.json"
+  },
+  "elapsed_sec": 262.7,
+  "token_usage": {
+    "translator": {
+      "model": "gemini-3.1-pro-preview",
+      "input_tokens": 3717,
+      "output_tokens": 3778,
+      "cost_usd": 0.05277
+    },
+    "decomposer": {
+      "model": "gemini-3.1-pro-preview",
+      "input_tokens": 15190,
+      "output_tokens": 24595,
+      "cost_usd": 0.32552
+    },
+    "total_input_tokens": 18907,
+    "total_output_tokens": 28373,
+    "total_cost_usd": 0.37829
+  }
+}

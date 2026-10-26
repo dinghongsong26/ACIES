@@ -1,0 +1,213 @@
+{
+  "variables": {
+    "inputs": [
+      "r1_at_dock",
+      "r1_at_shelf",
+      "r1_has_item",
+      "task",
+      "r1_dock_grant"
+    ],
+    "outputs": [
+      "r1_done",
+      "r1_dropoff",
+      "r1_go_to_dock",
+      "r1_go_to_shelf",
+      "r1_pickup",
+      "r1_dock_req"
+    ]
+  },
+  "ltl_pairs": [
+    {
+      "nl": "Each robot repeatedly fetches an item from the shelf and delivers it to the dock.",
+      "ltl": "G F(r1_dropoff)",
+      "req": [
+        1,
+        8
+      ]
+    },
+    {
+      "nl": "A robot must request and hold the dock's exclusive access before entering or occupying the dock to drop off.",
+      "ltl": "G(r1_dropoff -> r1_dock_grant)",
+      "req": [
+        2
+      ]
+    },
+    {
+      "nl": "A grant remains asserted while its matching request remains asserted.",
+      "ltl": "G((r1_dock_grant & r1_dock_req & X(r1_dock_req)) -> X(r1_dock_grant))",
+      "req": [
+        4
+      ]
+    },
+    {
+      "nl": "A robot begins idle at the very first step, with no outstanding dock request yet.",
+      "ltl": "!r1_dock_req",
+      "req": [
+        5
+      ]
+    },
+    {
+      "nl": "After completing dropoff, a robot releases its dock request IMMEDIATELY -- the very next step.",
+      "ltl": "G((r1_dropoff & X(!r1_has_item)) -> X(!r1_dock_req))",
+      "req": [
+        5
+      ]
+    },
+    {
+      "nl": "Every granted lease is eventually released so another waiting robot can be served.",
+      "ltl": "G F(!r1_dock_req | !r1_dock_grant)",
+      "req": [
+        5
+      ]
+    },
+    {
+      "nl": "As soon as a robot is carrying an item, it must request the dock without delay.",
+      "ltl": "G(r1_has_item -> r1_dock_req)",
+      "req": [
+        6
+      ]
+    },
+    {
+      "nl": "A robot only heads to the shelf while it is NOT carrying an item.",
+      "ltl": "G(r1_go_to_shelf -> !r1_has_item)",
+      "req": [
+        6
+      ]
+    },
+    {
+      "nl": "A robot can pick up only while at the shelf.",
+      "ltl": "G(r1_pickup -> r1_at_shelf)",
+      "req": [
+        7
+      ]
+    },
+    {
+      "nl": "A robot can drop off only while at the dock carrying an item.",
+      "ltl": "G(r1_dropoff -> (r1_at_dock & r1_has_item))",
+      "req": [
+        7
+      ]
+    },
+    {
+      "nl": "Action persistence: pickup holds until item is carried.",
+      "ltl": "G((r1_pickup & X(!r1_has_item)) -> X(r1_pickup))",
+      "req": [
+        7
+      ]
+    },
+    {
+      "nl": "Grant-gated action persistence: dropoff holds until item is dropped, provided the grant persists.",
+      "ltl": "G((r1_dropoff & X(r1_has_item) & X(r1_dock_grant)) -> X(r1_dropoff))",
+      "req": [
+        2,
+        7
+      ]
+    },
+    {
+      "nl": "Each robot does one thing at a time.",
+      "ltl": "G(!(r1_pickup & r1_dropoff) & !(r1_go_to_shelf & r1_go_to_dock) & !(r1_pickup & r1_go_to_dock) & !(r1_pickup & r1_go_to_shelf) & !(r1_dropoff & r1_go_to_shelf) & !(r1_dropoff & r1_go_to_dock))",
+      "req": [
+        8
+      ]
+    },
+    {
+      "nl": "When a robot heads to the shelf it eventually arrives.",
+      "ltl": "G F(r1_at_shelf | !r1_go_to_shelf)",
+      "req": [
+        9
+      ]
+    },
+    {
+      "nl": "When a robot heads to the dock it eventually arrives.",
+      "ltl": "G F(r1_at_dock | !r1_go_to_dock)",
+      "req": [
+        9
+      ]
+    },
+    {
+      "nl": "It stays at the shelf until it moves away.",
+      "ltl": "G((r1_at_shelf & !r1_go_to_dock) -> X(r1_at_shelf))",
+      "req": [
+        9
+      ]
+    },
+    {
+      "nl": "It stays at the dock until it moves away.",
+      "ltl": "G((r1_at_dock & !r1_go_to_shelf) -> X(r1_at_dock))",
+      "req": [
+        9
+      ]
+    },
+    {
+      "nl": "A standing request for dock access is eventually granted.",
+      "ltl": "G F(r1_dock_grant | !r1_dock_req)",
+      "req": [
+        4,
+        9
+      ]
+    },
+    {
+      "nl": "New tasks keep arriving over time.",
+      "ltl": "G F(task)",
+      "req": [
+        9
+      ]
+    },
+    {
+      "nl": "R1: go_to_shelf is held until at_shelf appears",
+      "ltl": "G((r1_go_to_shelf & X(!r1_at_shelf)) -> X(r1_go_to_shelf))",
+      "req": [],
+      "source": "grounding"
+    },
+    {
+      "nl": "R1: go_to_dock is held until at_dock appears",
+      "ltl": "G((r1_go_to_dock & X(!r1_at_dock)) -> X(r1_go_to_dock))",
+      "req": [],
+      "source": "grounding"
+    },
+    {
+      "nl": "R1: world: pickup eventually produces has_item",
+      "ltl": "G F(r1_has_item | !r1_pickup)",
+      "req": [],
+      "source": "grounding"
+    },
+    {
+      "nl": "R1: world: dropoff eventually produces !has_item",
+      "ltl": "G F(!r1_has_item | !r1_dropoff)",
+      "req": [],
+      "source": "grounding"
+    },
+    {
+      "nl": "R1: world: has_item persists until dropoff",
+      "ltl": "G((r1_has_item & !r1_dropoff) -> X(r1_has_item))",
+      "req": [],
+      "source": "grounding"
+    },
+    {
+      "nl": "R1: world: !has_item persists until pickup",
+      "ltl": "G((!r1_has_item & !r1_pickup) -> X(!r1_has_item))",
+      "req": [],
+      "source": "grounding"
+    }
+  ],
+  "not_applicable": [
+    {
+      "req": 3,
+      "reason": "The system only has one robot instance (Robot1), so mutual exclusion among multiple robots is vacuous."
+    }
+  ],
+  "context": "A single robot fetches items from a shelf and requests exclusive arbiter access to deliver them to a shared dock.",
+  "completion": [
+    "added G((r1_go_to_shelf & X(!r1_at_shelf)) -> X(r1_go_to_shelf))",
+    "added G((r1_go_to_dock & X(!r1_at_dock)) -> X(r1_go_to_dock))",
+    "added G F(r1_has_item | !r1_pickup)",
+    "added G F(!r1_has_item | !r1_dropoff)",
+    "added G((r1_has_item & !r1_dropoff) -> X(r1_has_item))",
+    "added G((!r1_has_item & !r1_pickup) -> X(!r1_has_item))"
+  ],
+  "cache_key": "b1755065093fa22d9cbaf9f0657216e541f3a17b15c296063bd00b21e6ec1749",
+  "usage": {
+    "input_tokens": 3717,
+    "output_tokens": 3778
+  }
+}

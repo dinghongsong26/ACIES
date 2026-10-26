@@ -1,0 +1,64 @@
+name: warehouse
+dimensions: 2
+bounds: [0, 900, 0, 800]
+
+templates:
+  shelf_plank:
+    shape: rectangle
+    size: [140, 20]
+    interaction: pickup
+    navigable: false
+    color: [100, 65, 30]
+
+  dock_bar:
+    shape: rectangle
+    size: [900, 45]
+    interaction: delivery
+    navigable: true
+    color: [45, 105, 155]
+
+regions:
+  - name: S1
+    template: shelf_plank
+    position: [80, 50]
+  - name: S2
+    template: shelf_plank
+    position: [300, 50]
+  - name: S3
+    template: shelf_plank
+    position: [520, 50]
+  - name: S4
+    template: shelf_plank
+    position: [80, 180]
+  - name: S5
+    template: shelf_plank
+    position: [300, 180]
+  - name: S6
+    template: shelf_plank
+    position: [520, 180]
+  - name: S7
+    template: shelf_plank
+    position: [80, 310]
+  - name: S8
+    template: shelf_plank
+    position: [300, 310]
+  - name: S9
+    template: shelf_plank
+    position: [520, 310]
+  - name: S10
+    template: shelf_plank
+    position: [80, 440]
+  - name: S11
+    template: shelf_plank
+    position: [300, 440]
+  - name: S12
+    template: shelf_plank
+    position: [520, 440]
+  - name: dock
+    template: dock_bar
+    position: [0, 560]
+
+spawn_points:
+  Robot: [160, 490]
+  Robot1: [200, 490]
+  Robot2: [600, 490]

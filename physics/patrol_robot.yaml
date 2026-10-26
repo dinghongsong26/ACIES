@@ -1,0 +1,14 @@
+name: patrol_robot
+type: differential_drive
+
+geometry:
+  shape: circle
+  radius: 16
+
+dynamics:
+  max_speed: 120
+  model: double_integrator
+
+propositions:
+  inputs: [at_A, at_B, at_C, alert_A, alert_B, alert_C, inspection_done, report_ack]
+  outputs: [go_to_A, go_to_B, go_to_C, inspect, report]

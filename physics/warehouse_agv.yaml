@@ -1,0 +1,14 @@
+name: warehouse_agv
+type: differential_drive
+
+geometry:
+  shape: circle
+  radius: 14
+
+dynamics:
+  max_speed: 130
+  model: double_integrator
+
+propositions:
+  inputs: [at_shelf, has_item, at_dock, delivered, task]
+  outputs: [go_to_shelf, pickup, go_to_dock, dropoff, done]

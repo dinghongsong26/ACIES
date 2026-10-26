@@ -1,0 +1,51 @@
+name: warehouse
+
+# HIGH-LEVEL only. N workers fetch from a shared shelf and deliver to a shared dock, but only
+# the DOCK is a GR(1)-arbitrated exclusive resource (capacity 1, one real physical location).
+# The SHELF has NO arbiter at all: the simulator's own bin reservation (a specific shelf slot
+# is marked `reserved` for exactly one robot before it ever moves toward it) already guarantees
+# no two robots ever target the same physical item, so a GR(1)-level shelf_req/shelf_grant
+# exclusivity would be redundant with a constraint the physics already enforces -- it only adds
+# an artificial wait with zero safety benefit, and empirically it starved farther-away robots
+# while nearer ones monopolized whichever slot came free first (see project history). Dropping
+# it also makes the spec meaningfully cheaper to synthesize. No GR(1) formulas here; the
+# decomposer + gate handle that.
+#
+# Only ONE worker (Robot1) is declared here as the TEMPLATE. `main.py --task warehouse --n N`
+# (schema.TaskSpec.with_robot_count) clones it into Robot1..RobotN, cloning its Arbiter
+# edge per clone. Default N is 2 (pass --n 2 to reproduce the original two-robot scenario).
+
+architecture:
+  nodes:
+    - name: Robot1
+      role: worker
+      description: "AGV that picks an item from the shared shelf and delivers it to the shared dock"
+    - name: Arbiter
+      role: coordinator
+      description: "Grants exclusive access to the shared dock -- the only arbitrated resource; the shelf has no arbiter at all (see note above)"
+  edges:
+    - from: Robot1
+      to: Arbiter
+      interface: "dock request and grant"
+
+resources:
+  - name: shelf
+    type: location
+    description: "Pickup point with several individually-reserved bins -- no shared exclusive access; a robot may pick up as soon as it reaches its own reserved bin"
+  - name: dock
+    type: location
+    description: "Shared delivery point — only one robot at a time"
+  - name: item
+    type: object
+    description: "Cargo to be picked up and delivered"
+
+requirements:
+  - "Each robot repeatedly fetches an item from the shelf and delivers it to the dock."
+  - "Picking up from the shelf needs no shared access at all: a robot may pick up as soon as it is at the shelf and not already carrying an item. A robot must request and hold the dock's exclusive access before entering or occupying the dock to drop off; heading toward the dock is NOT gated on holding that access, only entering/occupying it to drop off is. A robot that does not yet hold it waits just outside the dock (not entering) until it is granted."
+  - "The arbiter grants the dock to at most one robot at a time."
+  - "The arbiter provides fair access: every request that remains asserted is eventually granted. A grant remains asserted while its matching request remains asserted; it must not be a one-step pulse during navigation or service."
+  - "A robot begins idle at the very first step, with no outstanding dock request yet -- this initial idle instant is an exception to every other timing rule below, which take hold starting the step after. After completing dropoff, a robot releases its dock request IMMEDIATELY -- the very next step, never held an extra step past service. Its exclusive access lease is released on that same schedule (the lease need not outlive the request it was granted for), so the arbiter can serve the next waiting robot without delay. Every granted lease is eventually released so another waiting robot can be served."
+  - "As soon as a robot is carrying an item, it must request the dock without delay and must not head back toward the shelf; it heads to the dock right away. A robot only heads to the shelf while it is NOT carrying an item."
+  - "A robot can pick up only while at the shelf, and drop off only while at the dock carrying an item."
+  - "Each robot does one thing at a time and should keep completing deliveries indefinitely."
+  - "World behaviour: when a robot heads somewhere it eventually arrives; it stays where it is until it moves; a standing request for dock access is eventually granted; new tasks keep arriving over time."

@@ -1,0 +1,207 @@
+NAME: dynamic_2r_3b;
+
+CONTRACT Robot1:
+    input boolean variable at_pickup_1;
+    input boolean variable has_box_1;
+    input boolean variable at_delivery_1;
+    input boolean variable delivery_credited_1;
+    input boolean variable has_task_1;
+
+    output boolean variable nav_pickup_1;
+    output boolean variable nav_delivery_1;
+    output boolean variable pickup_1;
+    output boolean variable dropoff_1;
+    output boolean variable done_1;
+
+    Assumptions:
+        !at_pickup_1;
+        !has_box_1;
+        !at_delivery_1;
+        !delivery_credited_1;
+        !has_task_1;
+        G(nav_pickup_1 -> X(at_pickup_1));
+        G(pickup_1 -> X(has_box_1));
+        G(nav_delivery_1 -> X(at_delivery_1));
+        G(dropoff_1 -> X(delivery_credited_1));
+        G(has_task_1 & !delivery_credited_1 -> X(has_task_1));
+        G(at_pickup_1 & !nav_delivery_1 -> X(at_pickup_1));
+        G(has_box_1 & !dropoff_1 -> X(has_box_1));
+        G(at_delivery_1 & !nav_pickup_1 -> X(at_delivery_1));
+        G(!(at_pickup_1 & at_delivery_1));
+
+    Guarantees:
+        !nav_pickup_1;
+        !nav_delivery_1;
+        !pickup_1;
+        !dropoff_1;
+        !done_1;
+        G(pickup_1 -> at_pickup_1);
+        G(dropoff_1 -> (at_delivery_1 & has_box_1));
+        G(!(nav_pickup_1 & pickup_1));
+        G(!(nav_pickup_1 & nav_delivery_1));
+        G(!(pickup_1 & nav_delivery_1));
+        G(!(pickup_1 & dropoff_1));
+        G(!(nav_delivery_1 & dropoff_1));
+        G(nav_pickup_1 & !at_pickup_1 -> X(nav_pickup_1));
+        G(nav_delivery_1 & !at_delivery_1 -> X(nav_delivery_1));
+        G(done_1 <-> delivery_credited_1);
+        G F(done_1);
+
+CONTRACT Robot2:
+    input boolean variable at_pickup_2;
+    input boolean variable has_box_2;
+    input boolean variable at_delivery_2;
+    input boolean variable delivery_credited_2;
+    input boolean variable has_task_2;
+
+    output boolean variable nav_pickup_2;
+    output boolean variable nav_delivery_2;
+    output boolean variable pickup_2;
+    output boolean variable dropoff_2;
+    output boolean variable done_2;
+
+    Assumptions:
+        !at_pickup_2;
+        !has_box_2;
+        !at_delivery_2;
+        !delivery_credited_2;
+        !has_task_2;
+        G(nav_pickup_2 -> X(at_pickup_2));
+        G(pickup_2 -> X(has_box_2));
+        G(nav_delivery_2 -> X(at_delivery_2));
+        G(dropoff_2 -> X(delivery_credited_2));
+        G(has_task_2 & !delivery_credited_2 -> X(has_task_2));
+        G(at_pickup_2 & !nav_delivery_2 -> X(at_pickup_2));
+        G(has_box_2 & !dropoff_2 -> X(has_box_2));
+        G(at_delivery_2 & !nav_pickup_2 -> X(at_delivery_2));
+        G(!(at_pickup_2 & at_delivery_2));
+
+    Guarantees:
+        !nav_pickup_2;
+        !nav_delivery_2;
+        !pickup_2;
+        !dropoff_2;
+        !done_2;
+        G(pickup_2 -> at_pickup_2);
+        G(dropoff_2 -> (at_delivery_2 & has_box_2));
+        G(!(nav_pickup_2 & pickup_2));
+        G(!(nav_pickup_2 & nav_delivery_2));
+        G(!(pickup_2 & nav_delivery_2));
+        G(!(pickup_2 & dropoff_2));
+        G(!(nav_delivery_2 & dropoff_2));
+        G(nav_pickup_2 & !at_pickup_2 -> X(nav_pickup_2));
+        G(nav_delivery_2 & !at_delivery_2 -> X(nav_delivery_2));
+        G(done_2 <-> delivery_credited_2);
+        G F(done_2);
+
+CONTRACT Dispatcher:
+    input boolean variable done_1;
+    input boolean variable done_2;
+
+    output boolean variable assign_task_1;
+    output boolean variable assign_task_2;
+
+    Assumptions:
+        !done_1;
+        !done_2;
+
+    Guarantees:
+        !assign_task_1;
+        !assign_task_2;
+        G F(assign_task_1);
+        G F(assign_task_2);
+
+CONTRACT System:
+    input boolean variable at_pickup_1;
+    input boolean variable has_box_1;
+    input boolean variable at_delivery_1;
+    input boolean variable delivery_credited_1;
+    input boolean variable has_task_1;
+    input boolean variable at_pickup_2;
+    input boolean variable has_box_2;
+    input boolean variable at_delivery_2;
+    input boolean variable delivery_credited_2;
+    input boolean variable has_task_2;
+
+    output boolean variable nav_pickup_1;
+    output boolean variable nav_delivery_1;
+    output boolean variable pickup_1;
+    output boolean variable dropoff_1;
+    output boolean variable done_1;
+    output boolean variable nav_pickup_2;
+    output boolean variable nav_delivery_2;
+    output boolean variable pickup_2;
+    output boolean variable dropoff_2;
+    output boolean variable done_2;
+    output boolean variable assign_task_1;
+    output boolean variable assign_task_2;
+
+    Assumptions:
+        !at_pickup_1;
+        !has_box_1;
+        !at_delivery_1;
+        !delivery_credited_1;
+        !has_task_1;
+        !at_pickup_2;
+        !has_box_2;
+        !at_delivery_2;
+        !delivery_credited_2;
+        !has_task_2;
+        G(nav_pickup_1 -> X(at_pickup_1));
+        G(pickup_1 -> X(has_box_1));
+        G(nav_delivery_1 -> X(at_delivery_1));
+        G(dropoff_1 -> X(delivery_credited_1));
+        G(has_task_1 & !delivery_credited_1 -> X(has_task_1));
+        G(at_pickup_1 & !nav_delivery_1 -> X(at_pickup_1));
+        G(has_box_1 & !dropoff_1 -> X(has_box_1));
+        G(at_delivery_1 & !nav_pickup_1 -> X(at_delivery_1));
+        G(!(at_pickup_1 & at_delivery_1));
+        G(nav_pickup_2 -> X(at_pickup_2));
+        G(pickup_2 -> X(has_box_2));
+        G(nav_delivery_2 -> X(at_delivery_2));
+        G(dropoff_2 -> X(delivery_credited_2));
+        G(has_task_2 & !delivery_credited_2 -> X(has_task_2));
+        G(at_pickup_2 & !nav_delivery_2 -> X(at_pickup_2));
+        G(has_box_2 & !dropoff_2 -> X(has_box_2));
+        G(at_delivery_2 & !nav_pickup_2 -> X(at_delivery_2));
+        G(!(at_pickup_2 & at_delivery_2));
+        G(assign_task_1 -> X(has_task_1));
+        G(assign_task_2 -> X(has_task_2));
+
+    Guarantees:
+        !nav_pickup_1;
+        !nav_delivery_1;
+        !pickup_1;
+        !dropoff_1;
+        !done_1;
+        !nav_pickup_2;
+        !nav_delivery_2;
+        !pickup_2;
+        !dropoff_2;
+        !done_2;
+        !assign_task_1;
+        !assign_task_2;
+        G(pickup_1 -> at_pickup_1);
+        G(dropoff_1 -> (at_delivery_1 & has_box_1));
+        G(!(nav_pickup_1 & pickup_1));
+        G(!(nav_pickup_1 & nav_delivery_1));
+        G(!(pickup_1 & nav_delivery_1));
+        G(!(pickup_1 & dropoff_1));
+        G(!(nav_delivery_1 & dropoff_1));
+        G(nav_pickup_1 & !at_pickup_1 -> X(nav_pickup_1));
+        G(nav_delivery_1 & !at_delivery_1 -> X(nav_delivery_1));
+        G(done_1 <-> delivery_credited_1);
+        G F(done_1);
+        G(pickup_2 -> at_pickup_2);
+        G(dropoff_2 -> (at_delivery_2 & has_box_2));
+        G(!(nav_pickup_2 & pickup_2));
+        G(!(nav_pickup_2 & nav_delivery_2));
+        G(!(pickup_2 & nav_delivery_2));
+        G(!(pickup_2 & dropoff_2));
+        G(!(nav_delivery_2 & dropoff_2));
+        G(nav_pickup_2 & !at_pickup_2 -> X(nav_pickup_2));
+        G(nav_delivery_2 & !at_delivery_2 -> X(nav_delivery_2));
+        G(done_2 <-> delivery_credited_2);
+        G F(done_2);
+        G F(assign_task_1);
+        G F(assign_task_2);

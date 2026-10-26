@@ -1,0 +1,44 @@
+NAME: translation_check;
+
+CONTRACT Spec:
+    input boolean variable r1_at_dock;
+    input boolean variable r1_at_shelf;
+    input boolean variable r1_has_item;
+    input boolean variable task;
+    output boolean variable r1_dock_grant;
+    output boolean variable r1_dock_req;
+    output boolean variable r1_dropoff;
+    output boolean variable r1_go_to_dock;
+    output boolean variable r1_go_to_shelf;
+    output boolean variable r1_pickup;
+    Assumptions:
+        !r1_at_dock;
+        !r1_at_shelf;
+        !r1_has_item;
+        !task;
+        G F(r1_at_shelf | !r1_go_to_shelf);
+        G F(r1_at_dock | !r1_go_to_dock);
+        G((r1_at_shelf & !r1_go_to_dock) -> X(r1_at_shelf));
+        G((r1_at_dock & !r1_go_to_shelf) -> X(r1_at_dock));
+        G F(task);
+        G F(r1_has_item | !r1_pickup);
+        G F(!r1_has_item | !r1_dropoff);
+        G((r1_has_item & !r1_dropoff) -> X(r1_has_item));
+        G((!r1_has_item & !r1_pickup) -> X(!r1_has_item));
+    Guarantees:
+        G F(r1_dropoff);
+        G(r1_dropoff -> r1_dock_grant);
+        G((r1_dock_grant & r1_dock_req & X(r1_dock_req)) -> X(r1_dock_grant));
+        !r1_dock_req;
+        G((r1_dropoff & X(!r1_has_item)) -> X(!r1_dock_req));
+        G F(!r1_dock_req | !r1_dock_grant);
+        G(r1_has_item -> r1_dock_req);
+        G(r1_go_to_shelf -> !r1_has_item);
+        G(r1_pickup -> r1_at_shelf);
+        G(r1_dropoff -> (r1_at_dock & r1_has_item));
+        G((r1_pickup & X(!r1_has_item)) -> X(r1_pickup));
+        G((r1_dropoff & X(r1_has_item) & X(r1_dock_grant)) -> X(r1_dropoff));
+        G(!(r1_pickup & r1_dropoff) & !(r1_go_to_shelf & r1_go_to_dock) & !(r1_pickup & r1_go_to_dock) & !(r1_pickup & r1_go_to_shelf) & !(r1_dropoff & r1_go_to_shelf) & !(r1_dropoff & r1_go_to_dock));
+        G F(r1_dock_grant | !r1_dock_req);
+        G((r1_go_to_shelf & X(!r1_at_shelf)) -> X(r1_go_to_shelf));
+        G((r1_go_to_dock & X(!r1_at_dock)) -> X(r1_go_to_dock));

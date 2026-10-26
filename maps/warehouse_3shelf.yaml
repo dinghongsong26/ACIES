@@ -1,0 +1,36 @@
+name: warehouse_3shelf
+dimensions: 2
+bounds: [0, 900, 0, 820]
+
+templates:
+  pickup_zone:
+    shape: rectangle
+    size: [100, 60]
+    interaction: pickup
+    navigable: true
+    color: [150, 90, 210]
+
+  delivery_bar:
+    shape: rectangle
+    size: [900, 45]
+    interaction: delivery
+    navigable: true
+    color: [45, 105, 155]
+
+regions:
+  - name: pickup_1
+    template: pickup_zone
+    position: [100, 60]
+  - name: pickup_2
+    template: pickup_zone
+    position: [400, 60]
+  - name: pickup_3
+    template: pickup_zone
+    position: [700, 60]
+  - name: dock
+    template: delivery_bar
+    position: [0, 620]
+
+spawn_points:
+  Robot1: [200, 550]
+  Robot2: [700, 550]

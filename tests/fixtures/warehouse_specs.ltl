@@ -1,0 +1,75 @@
+NAME: warehouse;
+
+CONTRACT Robot:
+    input boolean variable at_shelf;
+    input boolean variable at_dock;
+    output boolean variable nav_shelf;
+    output boolean variable pickup;
+    output boolean variable nav_dock;
+    output boolean variable dropoff;
+    output boolean variable has_item;
+    Assumptions:
+        !at_shelf;
+        !at_dock;
+        G F(at_shelf | !nav_shelf);
+        G F(at_dock | !nav_dock);
+        G((at_shelf & !nav_dock) -> X(at_shelf));
+        G((at_dock & !nav_shelf) -> X(at_dock));
+    Guarantees:
+        !nav_shelf;
+        !pickup;
+        !nav_dock;
+        !dropoff;
+        !has_item;
+        G((nav_shelf & !at_shelf) -> X(nav_shelf));
+        G((nav_dock & !at_dock) -> X(nav_dock));
+        G(pickup -> at_shelf);
+        G(dropoff -> (at_dock & has_item));
+        G(nav_dock -> has_item);
+        G(!(nav_shelf & nav_dock));
+        G(!(nav_shelf & pickup));
+        G(!(nav_shelf & dropoff));
+        G(!(pickup & nav_dock));
+        G(!(pickup & dropoff));
+        G(!(nav_dock & dropoff));
+        G(pickup -> X(has_item));
+        G(dropoff -> X(!has_item));
+        G((has_item & !dropoff) -> X(has_item));
+        G((!has_item & !pickup) -> X(!has_item));
+        G F(dropoff);
+
+CONTRACT System:
+    input boolean variable at_shelf;
+    input boolean variable at_dock;
+    output boolean variable nav_shelf;
+    output boolean variable pickup;
+    output boolean variable nav_dock;
+    output boolean variable dropoff;
+    output boolean variable has_item;
+    Assumptions:
+        !at_shelf;
+        !at_dock;
+        G F(at_shelf | !nav_shelf);
+        G F(at_dock | !nav_dock);
+        G((at_shelf & !nav_dock) -> X(at_shelf));
+        G((at_dock & !nav_shelf) -> X(at_dock));
+    Guarantees:
+        !nav_shelf;
+        !pickup;
+        !nav_dock;
+        !dropoff;
+        !has_item;
+        G(pickup -> at_shelf);
+        G(dropoff -> (at_dock & has_item));
+        G(nav_dock -> has_item);
+        G(!(nav_shelf & nav_dock));
+        G(!(nav_shelf & pickup));
+        G(!(nav_shelf & dropoff));
+        G(!(pickup & nav_dock));
+        G(!(pickup & dropoff));
+        G(!(nav_dock & dropoff));
+        G(pickup -> X(has_item));
+        G(dropoff -> X(!has_item));
+        G((has_item & !dropoff) -> X(has_item));
+        G((!has_item & !pickup) -> X(!has_item));
+        G F(dropoff);

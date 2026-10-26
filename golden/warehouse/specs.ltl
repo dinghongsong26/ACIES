@@ -1,0 +1,260 @@
+NAME: multi_robot;
+
+CONTRACT Robot1:
+    input boolean variable at_shelf1;
+    input boolean variable at_dock1;
+    input boolean variable has_item1;
+    input boolean variable task1;
+    input boolean variable shelf_grant1;
+    input boolean variable dock_grant1;
+
+    output boolean variable nav_shelf1;
+    output boolean variable nav_dock1;
+    output boolean variable pickup1;
+    output boolean variable dropoff1;
+    output boolean variable done1;
+    output boolean variable shelf_request1;
+    output boolean variable dock_request1;
+
+    Assumptions:
+        !at_shelf1;
+        !at_dock1;
+        !has_item1;
+        !task1;
+
+        G(nav_shelf1 -> X(at_shelf1));
+        G(pickup1 -> X(has_item1));
+        G(nav_dock1 -> X(at_dock1));
+        G(has_item1 & !dropoff1 -> X(has_item1));
+        
+        G F(task1);
+        G(task1 & !done1 -> X(task1));
+
+    Guarantees:
+        !nav_shelf1;
+        !nav_dock1;
+        !pickup1;
+        !dropoff1;
+        !done1;
+        !shelf_request1;
+        !dock_request1;
+
+        (!nav_shelf1) U shelf_grant1;
+        (!nav_dock1) U dock_grant1;
+        (!nav_dock1) U has_item1;
+
+        G(pickup1 -> at_shelf1);
+        G(dropoff1 -> (at_dock1 & has_item1));
+        
+        G(!(nav_shelf1 & nav_dock1));
+        G(!(pickup1 & dropoff1));
+        G(done1 <-> dropoff1);
+        
+        G(shelf_request1 & !shelf_grant1 -> X(shelf_request1));
+        G(dock_request1 & !dock_grant1 -> X(dock_request1));
+
+        G F(pickup1);
+        G F(dropoff1);
+        G F(done1);
+
+CONTRACT Robot2:
+    input boolean variable at_shelf2;
+    input boolean variable at_dock2;
+    input boolean variable has_item2;
+    input boolean variable task2;
+    input boolean variable shelf_grant2;
+    input boolean variable dock_grant2;
+
+    output boolean variable nav_shelf2;
+    output boolean variable nav_dock2;
+    output boolean variable pickup2;
+    output boolean variable dropoff2;
+    output boolean variable done2;
+    output boolean variable shelf_request2;
+    output boolean variable dock_request2;
+
+    Assumptions:
+        !at_shelf2;
+        !at_dock2;
+        !has_item2;
+        !task2;
+
+        G(nav_shelf2 -> X(at_shelf2));
+        G(pickup2 -> X(has_item2));
+        G(nav_dock2 -> X(at_dock2));
+        G(has_item2 & !dropoff2 -> X(has_item2));
+        
+        G F(task2);
+        G(task2 & !done2 -> X(task2));
+
+    Guarantees:
+        !nav_shelf2;
+        !nav_dock2;
+        !pickup2;
+        !dropoff2;
+        !done2;
+        !shelf_request2;
+        !dock_request2;
+
+        (!nav_shelf2) U shelf_grant2;
+        (!nav_dock2) U dock_grant2;
+        (!nav_dock2) U has_item2;
+
+        G(pickup2 -> at_shelf2);
+        G(dropoff2 -> (at_dock2 & has_item2));
+        
+        G(!(nav_shelf2 & nav_dock2));
+        G(!(pickup2 & dropoff2));
+        G(done2 <-> dropoff2);
+        
+        G(shelf_request2 & !shelf_grant2 -> X(shelf_request2));
+        G(dock_request2 & !dock_grant2 -> X(dock_request2));
+
+        G F(pickup2);
+        G F(dropoff2);
+        G F(done2);
+
+CONTRACT Arbiter:
+    input boolean variable shelf_request1;
+    input boolean variable dock_request1;
+    input boolean variable shelf_request2;
+    input boolean variable dock_request2;
+
+    output boolean variable shelf_grant1;
+    output boolean variable dock_grant1;
+    output boolean variable shelf_grant2;
+    output boolean variable dock_grant2;
+
+    Assumptions:
+        G(shelf_request1 & !shelf_grant1 -> X(shelf_request1));
+        G(dock_request1 & !dock_grant1 -> X(dock_request1));
+        G(shelf_request2 & !shelf_grant2 -> X(shelf_request2));
+        G(dock_request2 & !dock_grant2 -> X(dock_request2));
+
+    Guarantees:
+        !shelf_grant1;
+        !dock_grant1;
+        !shelf_grant2;
+        !dock_grant2;
+
+        G(!(shelf_grant1 & shelf_grant2));
+        G(!(dock_grant1 & dock_grant2));
+        
+        G(shelf_grant1 -> shelf_request1);
+        G(shelf_grant2 -> shelf_request2);
+        G(dock_grant1 -> dock_request1);
+        G(dock_grant2 -> dock_request2);
+
+CONTRACT System:
+    input boolean variable at_shelf1;
+    input boolean variable at_dock1;
+    input boolean variable has_item1;
+    input boolean variable task1;
+    input boolean variable at_shelf2;
+    input boolean variable at_dock2;
+    input boolean variable has_item2;
+    input boolean variable task2;
+
+    output boolean variable nav_shelf1;
+    output boolean variable nav_dock1;
+    output boolean variable pickup1;
+    output boolean variable dropoff1;
+    output boolean variable done1;
+    output boolean variable shelf_request1;
+    output boolean variable dock_request1;
+    output boolean variable shelf_grant1;
+    output boolean variable dock_grant1;
+    output boolean variable nav_shelf2;
+    output boolean variable nav_dock2;
+    output boolean variable pickup2;
+    output boolean variable dropoff2;
+    output boolean variable done2;
+    output boolean variable shelf_request2;
+    output boolean variable dock_request2;
+    output boolean variable shelf_grant2;
+    output boolean variable dock_grant2;
+
+    Assumptions:
+        !at_shelf1;
+        !at_dock1;
+        !has_item1;
+        !task1;
+        !at_shelf2;
+        !at_dock2;
+        !has_item2;
+        !task2;
+
+        G(nav_shelf1 -> X(at_shelf1));
+        G(pickup1 -> X(has_item1));
+        G(nav_dock1 -> X(at_dock1));
+        G(has_item1 & !dropoff1 -> X(has_item1));
+        
+        G(nav_shelf2 -> X(at_shelf2));
+        G(pickup2 -> X(has_item2));
+        G(nav_dock2 -> X(at_dock2));
+        G(has_item2 & !dropoff2 -> X(has_item2));
+
+        G F(task1);
+        G F(task2);
+        G(task1 & !done1 -> X(task1));
+        G(task2 & !done2 -> X(task2));
+
+    Guarantees:
+        !nav_shelf1;
+        !nav_dock1;
+        !pickup1;
+        !dropoff1;
+        !done1;
+        !shelf_request1;
+        !dock_request1;
+        !shelf_grant1;
+        !dock_grant1;
+        !nav_shelf2;
+        !nav_dock2;
+        !pickup2;
+        !dropoff2;
+        !done2;
+        !shelf_request2;
+        !dock_request2;
+        !shelf_grant2;
+        !dock_grant2;
+
+        (!nav_shelf1) U shelf_grant1;
+        (!nav_shelf2) U shelf_grant2;
+        (!nav_dock1) U dock_grant1;
+        (!nav_dock2) U dock_grant2;
+        (!nav_dock1) U has_item1;
+        (!nav_dock2) U has_item2;
+        
+        G(!(shelf_grant1 & shelf_grant2));
+        G(!(dock_grant1 & dock_grant2));
+        
+        G(pickup1 -> at_shelf1);
+        G(pickup2 -> at_shelf2);
+        G(dropoff1 -> (at_dock1 & has_item1));
+        G(dropoff2 -> (at_dock2 & has_item2));
+        
+        G(!(nav_shelf1 & nav_dock1));
+        G(!(nav_shelf2 & nav_dock2));
+        G(!(pickup1 & dropoff1));
+        G(!(pickup2 & dropoff2));
+        
+        G(done1 <-> dropoff1);
+        G(done2 <-> dropoff2);
+        
+        G(shelf_request1 & !shelf_grant1 -> X(shelf_request1));
+        G(dock_request1 & !dock_grant1 -> X(dock_request1));
+        G(shelf_request2 & !shelf_grant2 -> X(shelf_request2));
+        G(dock_request2 & !dock_grant2 -> X(dock_request2));
+        
+        G(shelf_grant1 -> shelf_request1);
+        G(shelf_grant2 -> shelf_request2);
+        G(dock_grant1 -> dock_request1);
+        G(dock_grant2 -> dock_request2);
+
+        G F(pickup1);
+        G F(dropoff1);
+        G F(pickup2);
+        G F(dropoff2);
+        G F(done1);
+        G F(done2);

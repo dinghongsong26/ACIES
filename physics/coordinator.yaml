@@ -1,0 +1,10 @@
+name: coordinator
+type: virtual
+
+geometry: null
+
+dynamics: null
+
+propositions:
+  inputs: []
+  outputs: []

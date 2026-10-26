@@ -1,0 +1,14 @@
+MODULE main
+VAR
+	r1_dock_req : boolean;
+	r1_dock_grant : boolean;
+	LTLSPEC (
+		 !(
+		( G ( F ( !(r1_dock_req) |  !(r1_dock_grant))))) )
+
+	LTLSPEC (
+		 !( !(r1_dock_grant) & 
+		( G (r1_dock_grant -> r1_dock_req)) & 
+		( G (((r1_dock_grant & r1_dock_req) & ( X r1_dock_req)) -> ( X r1_dock_grant))) & 
+		( G ( F (r1_dock_grant |  !(r1_dock_req))))) )
+

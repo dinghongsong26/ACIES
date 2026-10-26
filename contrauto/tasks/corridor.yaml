@@ -1,0 +1,74 @@
+name: corridor
+
+# B (angle-3 GENERALITY): SPATIAL mutual exclusion — a single-lane CORRIDOR only one robot may
+# be INSIDE at a time. Unlike the dock (resource = a TERMINAL point, grant gates the dropoff
+# OPERATION), the corridor's resource is the PASSAGE itself: the grant must gate ENTERING /
+# being-inside, and be HELD for the whole crossing. So this needs its OWN atomic propositions
+# and its OWN synthesized FSM — you cannot reuse the dock's arbiter.
+#
+# Atomic propositions (per robot):
+#   inputs : at_b (reached side B), grant (corridor access),
+#            task (arrival), req (the crossing DEMAND -- raised/withdrawn by the WORLD:
+#            dir: world on the edges below, observed by robot and arbiter alike; putting
+#            req on the robot's output side makes "eventual release" a robot obligation
+#            that holds only if it is eventually granted -- a circular liveness discharge
+#            the refinement check rightly rejects)
+#   outputs: crossing (inside the corridor, moving through)
+# Key guarantee the synthesis must produce: G(crossing -> grant)  — you are inside the corridor
+# ONLY while you hold the access — plus persistence (hold it until you reach side B).
+#
+# NOTE (deliberately no `at_a` input): the simulator grounds `at_a` to a constant `False`
+# ("absorbing marker: never raised live" -- simulator/corridor.py E2ERobot.SENSORS), since a
+# robot's presence at side A is never gated/interesting -- it starts there and that's it.
+# Declaring it anyway let the decomposer write `G F(at_a)` (an assumption the real world can
+# never discharge) and gate the crossing guarantee on it, leaving the synthesized strategy's
+# real-execution liveness UNDEFINED once that assumption breaks -- SLUGS's arbitrary pick then
+# either happens to still cross (as seen at N=3) or never does (as seen at N=5). Removing the
+# input removes the variable the LLM could write that assumption about; there is no signal lost
+# since it never varied.
+
+# Only ONE worker (Robot1) is declared here as the TEMPLATE. `main.py --task corridor --n N`
+# (schema.TaskSpec.with_robot_count) clones it into Robot1..RobotN plus one edge to Arbiter
+# per clone. Default N used elsewhere in the repo (sim_filmstrip, corridor case study) is 3.
+
+architecture:
+  nodes:
+    - name: Robot1
+      role: worker
+      description: "AGV that crosses a single-lane corridor from side A to side B"
+      propositions:
+        inputs: [at_b, task_arrived]
+        outputs: [crossing]
+    - name: Arbiter
+      role: coordinator
+      description: "Grants exclusive access to the single-lane corridor"
+  edges:
+    - from: Robot1
+      to: Arbiter
+      interface: "corridor request and grant"
+      signals:
+        - {base: req, dir: world}
+        - {base: grant, dir: backward}
+
+resources:
+  - name: corridor
+    type: passage
+    description: "Single-lane corridor — only one robot may be inside at a time"
+
+# PASSAGE-TYPE KEY (see experiments/passage_arbiter.py): a passage differs from a terminal
+# resource because the grant must be HELD for the whole crossing. A memoryless mutex+justice
+# arbiter (correct for the dock) may revoke the grant mid-crossing, which is unrealizable against
+# the worker's "stay crossing until side B" guarantee (the counterstrategy shows crossing=TRUE,
+# grant=FALSE). The fix is a LOCK with HOLD-UNTIL-RELEASE on the arbiter, paired with the finite-
+# crossing world assumption (a holder eventually releases, so GF !req per robot). Both stated as
+# safety + justice below -- no `until`/response, so it stays in the GR(1) fragment.
+requirements:
+  - "Each robot crosses from side A through the corridor to side B when the world demands a crossing."
+  - "A robot must hold the corridor's exclusive access before it enters and starts crossing."
+  - "At most one robot may be inside the corridor at a time."
+  - "A robot is inside the corridor (crossing) only while it holds the corridor access."
+  - "Once the arbiter grants the corridor to a robot, it keeps that grant for that robot for as long as the demand stands: the arbiter does not revoke a standing access mid-crossing (hold until release)."
+  - "Each robot does one thing at a time."
+  - "Every standing access demand is eventually granted (no robot's demand starves)."
+  - "World behaviour: the crossing demand (request) is raised and withdrawn by the world, not chosen by the robots; new crossing tasks keep arriving, and each robot's demand is infinitely often withdrawn (no demand stands forever); a robot stays where it is until it moves."
+  - "Being at side B is temporary: after a delivery the robot leaves side B (it returns toward side A on a separate return path outside the corridor), so it can be demanded and can cross again; the world does not keep a robot at side B forever."

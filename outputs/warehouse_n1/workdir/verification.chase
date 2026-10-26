@@ -1,0 +1,5 @@
+saturate Robot1;
+saturate Arbiter;
+saturate System;
+compose Robot1 Arbiter Comp1;
+refinement Comp1 System refinement_warehouse.smv;

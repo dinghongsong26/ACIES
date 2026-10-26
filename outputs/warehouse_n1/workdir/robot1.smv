@@ -1,0 +1,43 @@
+MODULE main
+VAR
+	r1_at_shelf : boolean;
+	r1_at_dock : boolean;
+	r1_has_item : boolean;
+	r1_dock_grant : boolean;
+	task : boolean;
+	r1_go_to_shelf : boolean;
+	r1_go_to_dock : boolean;
+	r1_pickup : boolean;
+	r1_dropoff : boolean;
+	r1_dock_req : boolean;
+	LTLSPEC (
+		 !( !(r1_at_shelf) &  !(r1_at_dock) &  !(r1_has_item) &  !(task) & 
+		( G ( F (r1_at_shelf |  !(r1_go_to_shelf)))) & 
+		( G ( F (r1_at_dock |  !(r1_go_to_dock)))) & 
+		( G ((r1_at_shelf &  !(r1_go_to_dock)) -> ( X r1_at_shelf))) & 
+		( G ((r1_at_dock &  !(r1_go_to_shelf)) -> ( X r1_at_dock))) & 
+		( G ( F (r1_dock_grant |  !(r1_dock_req)))) & 
+		( G ( F task)) & 
+		( G ( F (r1_has_item |  !(r1_pickup)))) & 
+		( G ( F ( !(r1_has_item) |  !(r1_dropoff)))) & 
+		( G ((r1_has_item &  !(r1_dropoff)) -> ( X r1_has_item))) & 
+		( G (( !(r1_has_item) &  !(r1_pickup)) -> ( X  !(r1_has_item))))) )
+
+	LTLSPEC (
+		 !( !(r1_go_to_shelf) &  !(r1_go_to_dock) &  !(r1_pickup) &  !(r1_dropoff) &  !(r1_dock_req) & 
+		( G ( F r1_dropoff)) & 
+		( G (r1_dropoff -> r1_dock_grant)) & 
+		( G ((r1_dropoff & ( X  !(r1_has_item))) -> ( X  !(r1_dock_req)))) & 
+		( G ( F ( !(r1_dock_req) |  !(r1_dock_grant)))) & 
+		( G (r1_has_item -> r1_dock_req)) & 
+		( G (r1_go_to_shelf ->  !(r1_has_item))) & 
+		( G (r1_pickup -> r1_at_shelf)) & 
+		( G (r1_dropoff -> (r1_at_dock & r1_has_item))) & 
+		( G ((r1_pickup & ( X  !(r1_has_item))) -> ( X r1_pickup))) & 
+		( G ((r1_dropoff & ( X (r1_has_item & ( X r1_dock_grant)))) -> ( X r1_dropoff))) & 
+		( G ((((( !((r1_pickup & r1_dropoff)) &  !((r1_go_to_shelf & r1_go_to_dock))) &  !((r1_pickup & r1_go_to_dock))) &  !((r1_pickup & r1_go_to_shelf))) &  !((r1_dropoff & r1_go_to_shelf))) &  !((r1_dropoff & r1_go_to_dock)))) & 
+		( G ((r1_go_to_shelf & ( X  !(r1_at_shelf))) -> ( X r1_go_to_shelf))) & 
+		( G ((r1_go_to_dock & ( X  !(r1_at_dock))) -> ( X r1_go_to_dock))) & 
+		( G (((task &  !(r1_has_item)) &  !(r1_at_shelf)) -> r1_go_to_shelf)) & 
+		( G ((r1_has_item &  !(r1_at_dock)) -> r1_go_to_dock))) )
+

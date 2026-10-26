@@ -1,0 +1,49 @@
+name: charger
+
+# B/C angle-3 (GENERALITY), the C case: N robots periodically need to RECHARGE at a single
+# SHARED charging station (capacity 1), coordinated by an Arbiter. A different shared-resource
+# FORM from the dock/corridor: the trigger is a CONTINUOUS battery state abstracted to a
+# discrete `battery_low` predicate, and the task is CHARGING (single-stage), not pick+deliver.
+# Same capacity-1 mutual-exclusion contract though: only one robot charges at a time.
+#
+# Only ONE worker (Robot1) is declared here as the TEMPLATE. `main.py --task charger --n N`
+# (schema.TaskSpec.with_robot_count) clones it into Robot1..RobotN plus one edge to Arbiter
+# per clone. Default N used by the repo's own evaluation harness (env_transfer.py, the
+# instances/charger case study) is 3 -- pass --n 3 to reproduce it.
+
+architecture:
+  nodes:
+    - name: Robot1
+      role: worker
+      description: "AGV that works and must recharge at the shared station when its battery is low"
+      propositions:
+        inputs: [battery_low, at_charger]
+        outputs: [goto_charger, charging]
+    - name: Arbiter
+      role: coordinator
+      description: "Grants exclusive access to the shared charging station"
+  edges:
+    - from: Robot1
+      to: Arbiter
+      interface: "charger request and grant"
+      signals:
+        - {base: req, dir: forward}
+        - {base: grant, dir: backward}
+
+resources:
+  - name: charger
+    type: location
+    description: "Shared charging station — only one robot may charge at a time"
+
+requirements:
+  # Charging is conditional on a sustained low-battery episode. The controller must not promise
+  # an unconditional `G F(charging)`: position and battery sensors are environment inputs.
+  - "Each robot works. During every low-battery episode it requests the shared charger, drives to it, and charges once access and the charger location are available."
+  - "A robot must hold the charging station's exclusive access before it starts charging."
+  - "At most one robot may charge at the station at a time."
+  - "A robot can charge only while it is at the charging station."
+  - "A robot drives to the charger only while it is requesting and its battery remains low; it does not go to the charger when its battery is not low."
+  - "If a robot remains low-battery, is still requesting, and is not at the charger, it keeps driving back until it arrives. Once it has arrived while still requesting, the world keeps it at the charger until it releases that request; the world must not displace a waiting robot between arrival and grant."
+  - "The arbiter provides fair exclusive access: every request that remains asserted is eventually granted. A grant remains asserted only while its matching request remains asserted; it does not pulse for one step while that request persists."
+  - "Each robot does one thing at a time. Its obligation is conditional: it charges only during a low-battery episode after reaching the charger with a grant."
+  - "World behaviour: each robot has infinitely many low-battery episodes. Once a battery is low, it stays low until that robot charges; once charging occurs, the battery becomes not-low in the next step. While a low-battery robot commands goto_charger, it eventually reaches the charger. Once at the charger with a still-asserted request, it remains there until the request is released. A request that remains asserted is eventually granted."

@@ -1,0 +1,10 @@
+# ContrAuto runtime dependencies (Python 3.10+)
+# External tools (nuXMV, SLUGS, CHASE) are installed separately — see README + CHASE_INSTALL_MACOS.md.
+
+numpy            # vectors / CBF-QP math
+pygame           # continuous-layer simulators
+Pillow           # GIF / frame export
+PyYAML           # task / map / physics specs
+litellm          # unified LLM client (gemini / openai / anthropic / ...)
+cvxpy            # CBF quadratic program (uses the CLARABEL solver)
+scipy            # CBF quadratic program (uses the CVXOPT solver)

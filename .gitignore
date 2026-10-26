@@ -1,0 +1,82 @@
+# Model weights
+gpt-oss-20b/
+*.bin
+*.safetensors
+*.pt
+*.pth
+.vscode/
+# Dataset
+vltl_dataset/
+*.csv
+download_vltl_dataset.py
+
+# Generated output files (run artifacts — regenerate with run.py / main.py)
+*log
+log
+_backup.py
+benchmark_outputs/
+# outputs/ IS tracked (see below), so pull its .log files back out from the *log rule above.
+!outputs/**/*.log
+
+testcase*
+decomposer_backup*
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Conda / venv
+.venv/
+env/
+venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local test recordings (GIFs + recorder); do not push
+test_gifs/
+
+# Local-only docs (design notes, theory notes, figures); not pushed.
+# Exception: the tracked reference documents below.
+docs/*
+!docs/FRAMEWORK.md
+!docs/BRING_YOUR_OWN_SIMULATOR.md
+!docs/GROUNDING.md
+
+# Credentials (never commit any env file — keys live only in a local .env)
+kaggle.json
+*.key
+.env
+.env.*
+!.env.example
+
+CHASE
+
+# runtime-generated summarizer memory (auto-rewritten each run)
+memory.md
+lingua_franca/
+
+# generated experiment/paper figures
+experiments/*.pdf
+*.pdf
+.gstack/
+
+# experiment DATA artifacts (result json/csv/reports live on disk, regenerable by the
+# scripts; only the scripts themselves are tracked). Top-level only -- does not touch
+# experiments/instances/*/README.md
+experiments/*.json
+experiments/*.csv
+experiments/*.md
+!experiments/README.md
+
+# Internal experiment archives (battle logs, run snapshots) and gallery assets
+experiments/archive/
+experiments/failure_gallery/
+
+# Paper source (kept local only, not pushed)
+paper/
+
+# Claude Code local settings (machine-specific permission allowlist)
+.claude/settings.local.json

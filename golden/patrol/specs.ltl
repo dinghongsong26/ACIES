@@ -1,0 +1,100 @@
+NAME: patrol;
+
+CONTRACT PatrolRobot:
+    input boolean variable at_A;
+    input boolean variable at_B;
+    input boolean variable at_C;
+    input boolean variable alert_A;
+    input boolean variable alert_B;
+    input boolean variable alert_C;
+    input boolean variable ack;
+
+    output boolean variable go_A;
+    output boolean variable go_B;
+    output boolean variable go_C;
+    output boolean variable inspect;
+    output boolean variable report;
+    output boolean variable has_inspected;
+
+    Assumptions:
+        !at_A;
+        !at_B;
+        !at_C;
+        !ack;
+        G(!(at_A & at_B) & !(at_A & at_C) & !(at_B & at_C));
+        G(go_A -> X(at_A));
+        G(go_B -> X(at_B));
+        G(go_C -> X(at_C));
+        G(alert_A & !(at_A & inspect) -> X(alert_A));
+        G(alert_B & !(at_B & inspect) -> X(alert_B));
+        G(alert_C & !(at_C & inspect) -> X(alert_C));
+        G(report -> X(ack));
+        G F(alert_A | alert_B | alert_C);
+
+    Guarantees:
+        !go_A;
+        !go_B;
+        !go_C;
+        !inspect;
+        !report;
+        !has_inspected;
+        G(!(go_A & go_B) & !(go_A & go_C) & !(go_B & go_C));
+        G(inspect -> ((at_A & alert_A) | (at_B & alert_B) | (at_C & alert_C)));
+        G(report -> (has_inspected | inspect));
+        G(has_inspected | inspect -> X(has_inspected));
+        G(!(has_inspected | inspect) -> X(!has_inspected));
+        G F(at_A);
+        G F(at_B);
+        G F(at_C);
+        G F(inspect);
+        G F(report);
+
+CONTRACT System:
+    input boolean variable at_A;
+    input boolean variable at_B;
+    input boolean variable at_C;
+    input boolean variable alert_A;
+    input boolean variable alert_B;
+    input boolean variable alert_C;
+    input boolean variable ack;
+
+    output boolean variable go_A;
+    output boolean variable go_B;
+    output boolean variable go_C;
+    output boolean variable inspect;
+    output boolean variable report;
+    output boolean variable has_inspected;
+
+    Assumptions:
+        !at_A;
+        !at_B;
+        !at_C;
+        !ack;
+        G(!(at_A & at_B) & !(at_A & at_C) & !(at_B & at_C));
+        G(go_A -> X(at_A));
+        G(go_B -> X(at_B));
+        G(go_C -> X(at_C));
+        G(alert_A & !(at_A & inspect) -> X(alert_A));
+        G(alert_B & !(at_B & inspect) -> X(alert_B));
+        G(alert_C & !(at_C & inspect) -> X(alert_C));
+        G(report -> X(ack));
+        G F(alert_A | alert_B | alert_C);
+
+    Guarantees:
+        !go_A;
+        !go_B;
+        !go_C;
+        !inspect;
+        !report;
+        !has_inspected;
+        G(!(go_A & go_B) & !(go_A & go_C) & !(go_B & go_C));
+        G(inspect -> ((at_A & alert_A) | (at_B & alert_B) | (at_C & alert_C)));
+        (!report) U inspect;
+        G(report -> (has_inspected | inspect));
+        G(has_inspected | inspect -> X(has_inspected));
+        G(!(has_inspected | inspect) -> X(!has_inspected));
+        G F(at_A);
+        G F(at_B);
+        G F(at_C);
+        G F(inspect);
+        G F(report);

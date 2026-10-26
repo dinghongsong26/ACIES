@@ -1,0 +1,62 @@
+[INPUT]
+r1_at_shelf
+r1_at_dock
+r1_has_item
+r1_dock_grant
+task
+
+
+[OUTPUT]
+r1_go_to_shelf
+r1_go_to_dock
+r1_pickup
+r1_dropoff
+r1_dock_req
+
+
+[ENV_INIT]
+(!(r1_at_shelf))
+(!(r1_at_dock))
+(!(r1_has_item))
+(!(task))
+
+[SYS_INIT]
+(!(r1_go_to_shelf))
+(!(r1_go_to_dock))
+(!(r1_pickup))
+(!(r1_dropoff))
+(!(r1_dock_req))
+
+[ENV_TRANS]
+((r1_at_shelf & (!(r1_go_to_dock))) -> r1_at_shelf')
+((r1_at_dock & (!(r1_go_to_shelf))) -> r1_at_dock')
+((r1_has_item & (!(r1_dropoff))) -> r1_has_item')
+(((!(r1_has_item)) & (!(r1_pickup))) -> (!(r1_has_item')))
+
+[SYS_TRANS]
+(r1_dropoff -> r1_dock_grant)
+((r1_dropoff & (!(r1_has_item'))) -> (!(r1_dock_req')))
+(r1_has_item -> r1_dock_req)
+(r1_go_to_shelf -> (!(r1_has_item)))
+(r1_pickup -> r1_at_shelf)
+(r1_dropoff -> (r1_at_dock & r1_has_item))
+((r1_pickup & (!(r1_has_item'))) -> r1_pickup')
+((r1_dropoff & (r1_has_item' & r1_dock_grant')) -> r1_dropoff')
+((((((!((r1_pickup & r1_dropoff))) & (!((r1_go_to_shelf & r1_go_to_dock)))) & (!((r1_pickup & r1_go_to_dock)))) & (!((r1_pickup & r1_go_to_shelf)))) & (!((r1_dropoff & r1_go_to_shelf)))) & (!((r1_dropoff & r1_go_to_dock))))
+((r1_go_to_shelf & (!(r1_at_shelf'))) -> r1_go_to_shelf')
+((r1_go_to_dock & (!(r1_at_dock'))) -> r1_go_to_dock')
+(((task & (!(r1_has_item))) & (!(r1_at_shelf))) -> r1_go_to_shelf)
+((r1_has_item & (!(r1_at_dock))) -> r1_go_to_dock)
+
+[ENV_LIVENESS]
+(r1_at_shelf | (!(r1_go_to_shelf)))
+(r1_at_dock | (!(r1_go_to_dock)))
+(r1_dock_grant | (!(r1_dock_req)))
+task
+(r1_has_item | (!(r1_pickup)))
+((!(r1_has_item)) | (!(r1_dropoff)))
+
+[SYS_LIVENESS]
+	r1_dropoff
+	((!(r1_dock_req)) | (!(r1_dock_grant)))
+

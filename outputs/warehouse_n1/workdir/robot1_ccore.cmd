@@ -1,0 +1,6 @@
+read_model -i outputs/warehouse_n1/workdir/robot1_ccore.smv
+flatten_hierarchy
+encode_variables
+build_boolean_model
+check_ltlspec_ic3
+quit

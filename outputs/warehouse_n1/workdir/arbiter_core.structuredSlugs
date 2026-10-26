@@ -1,0 +1,21 @@
+[INPUT]
+r1_dock_req
+
+
+[OUTPUT]
+r1_dock_grant
+
+
+[SYS_INIT]
+(!(r1_dock_grant))
+
+[SYS_TRANS]
+(r1_dock_grant -> r1_dock_req)
+(((r1_dock_grant & r1_dock_req) & r1_dock_req') -> r1_dock_grant')
+
+[ENV_LIVENESS]
+((!(r1_dock_req)) | (!(r1_dock_grant)))
+
+[SYS_LIVENESS]
+	(r1_dock_grant | (!(r1_dock_req)))
+

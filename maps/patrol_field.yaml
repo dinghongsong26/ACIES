@@ -1,0 +1,35 @@
+name: patrol_field
+dimensions: 2
+bounds: [0, 900, 0, 800]
+
+templates:
+  patrol_zone:
+    shape: circle
+    radius: 58
+    interaction: patrol
+    navigable: true
+    color: [35, 75, 115]
+
+  report_station:
+    shape: rectangle
+    size: [900, 64]
+    interaction: report
+    navigable: true
+    color: [30, 90, 140]
+
+regions:
+  - name: zone_A
+    template: patrol_zone
+    position: [150, 210]
+  - name: zone_B
+    template: patrol_zone
+    position: [450, 210]
+  - name: zone_C
+    template: patrol_zone
+    position: [750, 210]
+  - name: report
+    template: report_station
+    position: [0, 598]
+
+spawn_points:
+  Robot1: [450, 490]
