@@ -5,39 +5,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-<p align="center">
-  <img src="figure/warehouse_n2.gif" width="640"
-       alt="Two AGVs fetching items from the shelves and delivering them to a shared dock; the synthesized Arbiter FSM grants the dock to one robot at a time, with zero mutual-exclusion violations">
-  <br>
-  <em>Two robots, one shared dock: both controllers and the Arbiter were synthesized from natural-language requirements.</em>
-</p>
-
-Write what a robot team should do in plain language. ACIES formalizes it,
-generates a control architecture that realizes it, proves the parts fit
-together, and synthesizes a provably correct controller for each part.
-
-Within one synthesis episode, a **Translator** agent turns the
-natural-language requirements into linear temporal logic (LTL), and a
-**Decomposer** agent structures them into a system-level assume-guarantee
-contract plus one component-level contract per robot and coordinator.
-Formal verification is built into the decomposition loop: CHASE
-`logics_tool` + nuXmv check that the component contracts are consistent,
-compatible, and refine the system contract, and SLUGS synthesizes one
-finite-state controller per contract from its GR(1) game. Every failed
-check returns a diagnostic, a counterexample trace or a minimal
-unrealizable core, that drives repair of the system or component
-contracts. Across episodes, a **Summarizer** agent distills the
-verification outcomes into a lesson (failure pattern, root cause, fix
-rule) kept in memory and recalled at the start of the next episode, so
-the framework improves with experience: fewer repair rounds, lower cost.
-The certified controllers then run in a 2D simulator under a
-control-barrier-function safety filter.
-
 ![Overview of ACIES: within episode k, the Translator produces LTL, the Decomposer produces A/G contracts, formal verification (syntax check, consistency & compatibility, refinement with CHASE + nuXmv) and GR(1) synthesis with Slugs feed counterexamples and unrealizable cores back to the Decomposer; the Summarizer distills the episode log into a lesson stored in memory and recalled at the start of episode k+1](figure/acies_overview.png)
 
-Across five control synthesis tasks and eight LLM backbones, the
-formalized requirements are decomposed and mapped to a synthesizable
-control architecture that realizes them, and self-evolution reduces the
+ACIES turns natural-language requirements into provably correct
+controllers for cyber-physical systems. In each synthesis episode, a
+**Translator** agent formalizes the requirements in temporal logic, a
+**Decomposer** agent structures them into a system-level contract and
+component-level contracts, and formal verification (CHASE + nuXmv) and
+GR(1) synthesis (SLUGS) return a diagnostic for every failed check that
+drives contract repair. Across episodes, a **Summarizer** agent distills
+the verification outcomes into lessons stored in memory. On five control
+synthesis tasks and eight LLM backbones, this self-evolution reduces the
 Decomposer token consumption by up to 65% and the end-to-end synthesis
 latency by up to 62%.
 
@@ -65,6 +43,13 @@ source .env
 `.env` is gitignored, so keys are never committed.
 
 ## Quick start
+
+<p align="center">
+  <img src="figure/warehouse_n2.gif" width="640"
+       alt="Two AGVs fetching items from the shelves and delivering them to a shared dock; the synthesized Arbiter FSM grants the dock to one robot at a time, with zero mutual-exclusion violations">
+  <br>
+  <em><code>python main.py --task warehouse --n 2</code>: two robots share one dock; both robot controllers and the Arbiter are synthesized from natural-language requirements.</em>
+</p>
 
 `main.py` is the single entry point. It runs the task layer (synthesize,
 or reuse existing FSMs), then the physical layer (execute them in the
@@ -161,12 +146,14 @@ until FSMs have been synthesized (for example by
 ## Citation
 
 ```bibtex
-@misc{xiao2026acies,
-  title  = {{ACIES}: A Self-Evolving Agentic Contract-Based Framework for
-            Cyber-Physical System Control Synthesis},
-  author = {Xiao, Yifeng and Ni, Zhiyu and Song, Dinghong and Zhou, Mi and
-            Nuzzo, Pierluigi},
-  year   = {2026}
+@inproceedings{xiao2026acies,
+  title     = {{ACIES}: A Self-Evolving Agentic Contract-Based Framework for
+               Cyber-Physical System Control Synthesis},
+  author    = {Xiao, Yifeng and Ni, Zhiyu and Song, Dinghong and Zhou, Mi and
+               Nuzzo, Pierluigi},
+  booktitle = {Workshop at the 2026 Conference on Empirical Methods in Natural
+               Language Processing (EMNLP)},
+  year      = {2026}
 }
 ```
 
