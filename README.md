@@ -2,6 +2,7 @@
 
 **A Self-Evolving Agentic Contract-Based Framework for Cyber-Physical System Control Synthesis.**
 
+[![Paper](https://img.shields.io/badge/Paper-REALM%202026-red.svg)](https://aclanthology.org/2026.realm-1.36/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -15,6 +16,10 @@ component-level contracts, and formal verification (CHASE + nuXmv) and
 GR(1) synthesis (SLUGS) return a diagnostic for every failed check that
 drives contract repair. Across episodes, a **Summarizer** agent distills
 the verification outcomes into lessons stored in memory.
+
+**Paper:** [ACIES: A Self-Evolving Agentic Contract-Based Framework for
+Cyber-Physical System Control Synthesis](https://aclanthology.org/2026.realm-1.36/)
+([PDF](https://aclanthology.org/2026.realm-1.36.pdf)), REALM 2026 (ACL Anthology).
 
 ## Installation
 
@@ -146,14 +151,22 @@ until FSMs have been synthesized (for example by
 ## Citation
 
 ```bibtex
-@inproceedings{xiao2026acies,
+@inproceedings{xiao-etal-2026-acies,
   title     = {{ACIES}: A Self-Evolving Agentic Contract-Based Framework for
                Cyber-Physical System Control Synthesis},
   author    = {Xiao, Yifeng and Ni, Zhiyu and Song, Dinghong and Zhou, Mi and
                Nuzzo, Pierluigi},
-  booktitle = {Workshop at the 2026 Conference on Empirical Methods in Natural
-               Language Processing (EMNLP)},
-  year      = {2026}
+  editor    = {Kamalloo, Ehsan and Gontier, Nicolas and Rozanov, Nikolai and
+               Hashemzadeh, Maryam and Arora, Akhil},
+  booktitle = {Proceedings of the Second Workshop for {RE}search on Agent
+               Language Models ({REALM} 2026)},
+  month     = oct,
+  year      = {2026},
+  address   = {Budapest, Hungary},
+  publisher = {Association for Computational Linguistics},
+  url       = {https://aclanthology.org/2026.realm-1.36/},
+  pages     = {541--550},
+  isbn      = {979-8-89176-485-9}
 }
 ```
 
